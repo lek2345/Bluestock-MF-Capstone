@@ -26,3 +26,4 @@ for file in files:
     print(file)
     print("Rows and Columns:", df.shape)
     print(df.head())
+    

@@ -54,3 +54,49 @@ transactions.to_csv(
 )
 
 print("✅ Investor Transactions cleaned successfully!")
+
+# Load Scheme Performance
+performance = pd.read_csv(
+    os.path.join(RAW_PATH, "07_scheme_performance.csv")
+)
+
+# Convert return columns to numeric
+cols = [
+    "return_1yr_pct",
+    "return_3yr_pct",
+    "return_5yr_pct",
+    "sharpe_ratio"
+]
+
+for col in cols:
+    performance[col] = pd.to_numeric(
+        performance[col],
+        errors="coerce"
+    )
+
+# Flag negative Sharpe
+performance["negative_sharpe"] = (
+    performance["sharpe_ratio"] < 0
+)
+
+# Validate expense ratio
+if "expense_ratio_pct" in performance.columns:
+    performance["expense_ratio_valid"] = (
+        (performance["expense_ratio_pct"] >= 0.1)
+        &
+        (performance["expense_ratio_pct"] <= 2.5)
+    )
+
+# Remove duplicates
+performance = performance.drop_duplicates()
+
+# Save
+performance.to_csv(
+    os.path.join(
+        PROCESSED_PATH,
+        "clean_scheme_performance.csv"
+    ),
+    index=False
+)
+
+print("✅ Scheme Performance cleaned successfully!")
